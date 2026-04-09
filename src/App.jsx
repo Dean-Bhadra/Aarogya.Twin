@@ -1,6 +1,7 @@
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { HeartPulse, LayoutDashboard, Stethoscope, Beaker, LogOut, FileText, Info, DollarSign, Workflow as WorkflowIcon, Zap, Moon, Sun } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
 import Login from './pages/Login';
 import Landing from './pages/Landing';
 import Workflow from './pages/Workflow';
@@ -164,6 +165,7 @@ function App() {
           <Route path="/whatif" element={user ? <WhatIfLab /> : <Navigate to="/login" />} />
         </Routes>
       </div>
+      <Analytics />
     </>
   );
 }
