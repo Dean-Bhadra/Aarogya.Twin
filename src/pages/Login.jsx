@@ -45,7 +45,7 @@ export default function Login({ onLogin }) {
           </div>
         </div>
         
-        <h1 style={{fontSize: '24px', marginBottom: '8px'}}>Welcome to CardioRisk AI</h1>
+        <h1 style={{fontSize: '24px', marginBottom: '8px'}}>Welcome to Aarogya.Twin</h1>
         <p style={{color: 'var(--muted)', fontSize: '13px', marginBottom: '32px'}}>
           Please select your role to continue into the secure portal.
         </p>

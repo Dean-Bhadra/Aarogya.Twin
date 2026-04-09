@@ -22,7 +22,7 @@ export default function About() {
           <h2 style={{ fontSize: '24px', marginBottom: '16px' }}>Our Mission</h2>
           <p style={{ color: 'var(--muted)', fontSize: '15px', lineHeight: 1.7 }}>
             Cardiovascular diseases dictate the leading cause of mortality globally, but earlier identification is notoriously difficult without specialized screenings. 
-            We built CardioRisk AI entirely during this hackathon to prove that serverless, high-accuracy clinical decision support systems can be deployed rapidly—without relying on heavy backends.
+            We built Aarogya.Twin entirely during this hackathon to prove that serverless, high-accuracy clinical decision support systems can be deployed rapidly—without relying on heavy backends.
           </p>
         </div>
         <div className="form-card" style={{ padding: '40px', background: 'var(--s2)', border: '1px solid var(--border)' }}>

@@ -1,10 +1,10 @@
-# CardioRisk AI | Null Pointers 🫀🤖
+# Aarogya.Twin | Null Pointers 🫀🤖
 
 🚀 **Live Demo:** [Insert Vercel Link Here]
 
-**CardioRisk AI** is a premium, serverless clinical decision support system built entirely during our Hackathon by **Team Null Pointers**. 
+**Aarogya.Twin** is a premium, serverless clinical decision support system built entirely during our Hackathon by **Team Null Pointers**. 
 
-Traditional risk assessment tools are often fragmented, highly technical, and rely on heavy backend architecture. CardioRisk AI bridges this gap through a standalone, privacy-first **Digital Twin** strategy. It utilizes 6 concurrent Machine Learning models operating entirely client-side using pre-calculated weights to predict physiological cardiovascular risks with high clinical accuracy.
+Traditional risk assessment tools are often fragmented, highly technical, and rely on heavy backend architecture. Aarogya.Twin bridges this gap through a standalone, privacy-first **Digital Twin** strategy. It utilizes 6 concurrent Machine Learning models operating entirely client-side using pre-calculated weights to predict physiological cardiovascular risks with high clinical accuracy.
 
 ## ✨ Key Features
 - **Zero-Latency Inference:** Models run entirely in the browser using Javascript via pre-optimized weights. No spinning loading states or external API calls required.

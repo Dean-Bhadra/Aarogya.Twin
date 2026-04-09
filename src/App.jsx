@@ -1,6 +1,6 @@
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { HeartPulse, LayoutDashboard, Stethoscope, Beaker, LogOut, FileText, Info, DollarSign, Workflow as WorkflowIcon, Zap } from 'lucide-react';
+import { HeartPulse, LayoutDashboard, Stethoscope, Beaker, LogOut, FileText, Info, DollarSign, Workflow as WorkflowIcon, Zap, Moon, Sun } from 'lucide-react';
 import Login from './pages/Login';
 import Landing from './pages/Landing';
 import Workflow from './pages/Workflow';
@@ -16,6 +16,7 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState(null);
+  const [isLightMode, setIsLightMode] = useState(false);
 
   useEffect(() => {
     // Check local storage for mock session on load
@@ -23,12 +24,31 @@ function App() {
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     }
+    
+    // Check theme
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      setIsLightMode(true);
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
   }, []);
+
+  const toggleTheme = () => {
+    if (isLightMode) {
+      setIsLightMode(false);
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      setIsLightMode(true);
+      document.documentElement.setAttribute('data-theme', 'light');
+      localStorage.setItem('theme', 'light');
+    }
+  };
 
   const handleLogin = (role) => {
     const session = {
       role,
-      name: role === 'doctor' ? 'Dr. Smith' : role === 'admin' ? 'Admin' : 'John Doe',
+      name: role === 'doctor' ? 'Dr. Rakesh Sharma' : role === 'admin' ? 'Admin' : 'Arjun Gupta',
       id: Math.random().toString(36).substr(2, 9)
     };
     localStorage.setItem('cardiorisk_user', JSON.stringify(session));
@@ -64,11 +84,21 @@ function App() {
       <nav className="app-nav">
         <div className="nav-brand" onClick={() => navigate('/')} style={{cursor: 'pointer'}}>
           <HeartPulse size={24} color="#f43f5e" />
-          CardioRisk AI
+          Aarogya.Twin
         </div>
         <div className="nav-badge">v. alpha | Null Pointers</div>
         
         <div className="nav-links">
+          
+          {/* Theme Toggle Button */}
+          <button 
+            className="nav-link" 
+            onClick={toggleTheme} 
+            title="Toggle Light/Dark Mode"
+            style={{ padding: '8px', marginRight: '8px' }}
+          >
+            {isLightMode ? <Moon size={18} /> : <Sun size={18} />}
+          </button>
           {!user && (
             <>
               <NavItem path="/workflow" icon={WorkflowIcon} label="Workflow" />

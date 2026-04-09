@@ -53,7 +53,7 @@ export default function Landing() {
           </h1>
           
           <p style={{fontSize: '18px', color: 'var(--muted)', marginBottom: '40px', lineHeight: 1.6}}>
-            CardioRisk AI is a secure, serverless clinical decision support system utilizing 6 simultaneous ML models.
+            Aarogya.Twin is a secure, serverless clinical decision support system utilizing 6 simultaneous ML models.
           </p>
 
           <button className="btn-primary" onClick={() => navigate('/login')} style={{padding: '16px 40px', fontSize: '16px', borderRadius: '40px'}}>
@@ -73,7 +73,7 @@ export default function Landing() {
 
         {/* VALUE PROPOSITION SECTION */}
         <div style={{ marginBottom: '80px' }}>
-          <h2 style={{fontSize: '24px', textAlign: 'center', marginBottom: '32px'}}>How CardioRisk Solves The Problem</h2>
+          <h2 style={{fontSize: '24px', textAlign: 'center', marginBottom: '32px'}}>How Aarogya.Twin Solves The Problem</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
             <TiltCard>
               <div className="form-card" style={{ height: '100%', marginBottom: 0, background: 'linear-gradient(180deg, var(--s2) 0%, var(--bg) 100%)' }}>

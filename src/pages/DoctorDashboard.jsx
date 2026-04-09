@@ -4,9 +4,9 @@ import { predictAll } from '../utils/mlEngine';
 import { useNavigate } from 'react-router-dom';
 
 const MOCK_PATIENTS = [
-  { id: 'P-10492', name: 'Robert Chen', age: 45, sex: 1, history: 'Hypertension', inputs: { age: 45, gender_enc: 1, is_married: 1, race_asian: 1, income: 85000, has_hypertension: 1, systolic_bp: 145, diastolic_bp: 90, heart_rate: 72, hba1c: 5.4, spo2: 98, resp_rate: 16, weight_kg: 82, height_cm: 175, bmi: 26.8, alcohol_score: 2, phq2_score: 1 } },
-  { id: 'P-99381', name: 'Sarah Jenkins', age: 58, sex: 0, history: 'Type 2 Diabetes', inputs: { age: 58, gender_enc: 0, is_married: 0, race_white: 1, income: 45000, has_diabetes: 1, systolic_bp: 138, diastolic_bp: 82, heart_rate: 85, hba1c: 7.2, spo2: 95, resp_rate: 18, weight_kg: 95, height_cm: 162, bmi: 36.2, alcohol_score: 0, phq2_score: 3 } },
-  { id: 'P-55210', name: 'Michael Osei', age: 32, sex: 1, history: 'None', inputs: { age: 32, gender_enc: 1, is_married: 0, race_black: 1, income: 60000, has_diabetes: 0, systolic_bp: 118, diastolic_bp: 75, heart_rate: 65, hba1c: 5.1, spo2: 99, resp_rate: 14, weight_kg: 78, height_cm: 182, bmi: 23.5, alcohol_score: 4, phq2_score: 0 } },
+  { id: 'P-10492', name: 'Rajesh Kumar', age: 45, sex: 1, history: 'Hypertension', inputs: { age: 45, gender_enc: 1, is_married: 1, race_asian: 1, income: 85000, has_hypertension: 1, systolic_bp: 145, diastolic_bp: 90, heart_rate: 72, hba1c: 5.4, spo2: 98, resp_rate: 16, weight_kg: 82, height_cm: 175, bmi: 26.8, alcohol_score: 2, phq2_score: 1 } },
+  { id: 'P-99381', name: 'Priya Sharma', age: 58, sex: 0, history: 'Type 2 Diabetes', inputs: { age: 58, gender_enc: 0, is_married: 0, race_white: 1, income: 45000, has_diabetes: 1, systolic_bp: 138, diastolic_bp: 82, heart_rate: 85, hba1c: 7.2, spo2: 95, resp_rate: 18, weight_kg: 95, height_cm: 162, bmi: 36.2, alcohol_score: 0, phq2_score: 3 } },
+  { id: 'P-55210', name: 'Amit Patel', age: 32, sex: 1, history: 'None', inputs: { age: 32, gender_enc: 1, is_married: 0, race_black: 1, income: 60000, has_diabetes: 0, systolic_bp: 118, diastolic_bp: 75, heart_rate: 65, hba1c: 5.1, spo2: 99, resp_rate: 14, weight_kg: 78, height_cm: 182, bmi: 23.5, alcohol_score: 4, phq2_score: 0 } },
 ];
 
 export default function DoctorDashboard() {

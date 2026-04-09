@@ -27,6 +27,33 @@
   --sans: 'Space Grotesk', sans-serif;
   --r: 10px;
   --r2: 14px;
+  --nav-bg: rgba(7, 9, 15, 0.92);
+}
+
+[data-theme="light"] {
+  --bg: #f8fafc;
+  --s1: #f1f5f9;
+  --s2: #ffffff;
+  --s3: #e2e8f0;
+  --s4: #cbd5e1;
+  --border: #e2e8f0;
+  --border2: #cbd5e1;
+  --text: #0f172a;
+  --muted: #475569;
+  --hint: #64748b;
+  --blue: #2563eb;
+  --blue2: #3b82f6;
+  --indigo: #4f46e5;
+  --green: #059669;
+  --green2: #10b98155;
+  --amber: #d97706;
+  --amber2: #f59e0b33;
+  --red: #e11d48;
+  --red2: #f43f5e33;
+  --purple: #7c3aed;
+  --cyan: #0891b2;
+  --pink: #db2777;
+  --nav-bg: rgba(248, 250, 252, 0.92);
 }
 
 * {
@@ -82,7 +109,7 @@ nav.app-nav {
   left: 0;
   right: 0;
   z-index: 100;
-  background: rgba(7, 9, 15, 0.92);
+  background: var(--nav-bg);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border);
   height: 60px;
