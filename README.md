@@ -1,6 +1,6 @@
 # Aarogya.Twin | Null Pointers 🫀🤖
 
-🚀 **Live Demo:** [Insert Vercel Link Here]
+🚀 **Live Demo:** : aarogya-twin.vercel.app
 
 **Aarogya.Twin** is a premium, serverless clinical decision support system built entirely during our Hackathon by **Team Null Pointers**. 
 
