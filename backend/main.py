@@ -104,7 +104,17 @@ sleep_medians   = load_pkl("Sleep_Disorder/sleep_medians.pkl")       # dict or S
 explainer_sleep = load_pkl("Sleep_Disorder/explainer_sleep.pkl")     # pre-built SHAP explainer
 
 # Stress
-stress_model    = load_pkl("Stress_Risk/final_stress_model_v2.pkl")
+stress_model = load_pkl("Stress_Risk/final_stress_model_v2.pkl")
+if stress_model is None:
+    print("  [WARNING] Stress model failed via PKL, attempting Base64 decode injection...")
+    try:
+        import base64
+        from Models_New.Stress_Risk.stress_b64 import b64_string
+        stress_bytes = base64.b64decode(b64_string)
+        stress_model = pickle.loads(stress_bytes)
+        print("  [OK] Loaded: Stress Model via Base64 Injection")
+    except Exception as e:
+        print(f"  [ERROR] Base64 injection failed: {e}")
 
 print("----------------------------------------------------\n")
 
