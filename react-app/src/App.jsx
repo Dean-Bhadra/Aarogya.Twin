@@ -183,6 +183,21 @@ function App() {
           <Route path="/whatif" element={user ? <WhatIfLab /> : <Navigate to="/login" />} />
         </Routes>
       </div>
+
+      <footer style={{
+        textAlign: 'center',
+        padding: '24px 16px',
+        fontSize: '12px',
+        color: 'var(--muted)',
+        borderTop: '1px solid var(--border)',
+        marginTop: 'auto',
+        background: 'var(--bg)'
+      }}>
+        <p style={{ maxWidth: '800px', margin: '0 auto 8px auto', lineHeight: 1.5 }}>
+          <strong>Disclaimer:</strong> Aarogya Twin is an educational prototype built for demonstration purposes. It is <strong>not</strong> a certified clinical product or diagnostic tool. Always consult with a qualified healthcare professional for medical advice.
+        </p>
+        <p>&copy; Null Pointers 2026</p>
+      </footer>
     </>
   );
 }
