@@ -16,3 +16,6 @@ __pycache__/
 # Build Artifacts
 react-app/dist/
 backend/__pycache__/
+
+# Temp files
+Temp_Files/
