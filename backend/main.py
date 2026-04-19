@@ -104,7 +104,7 @@ sleep_medians   = load_pkl("Sleep_Disorder/sleep_medians.pkl")       # dict or S
 explainer_sleep = load_pkl("Sleep_Disorder/explainer_sleep.pkl")     # pre-built SHAP explainer
 
 # Stress
-stress_model    = load_pkl("Stress_Risk/final_stress_model.pkl")
+stress_model    = load_pkl("Stress_Risk/final_stress_model_v2.pkl")
 
 print("----------------------------------------------------\n")
 
