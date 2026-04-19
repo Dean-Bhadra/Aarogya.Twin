@@ -3,8 +3,9 @@ uvicorn
 scikit-learn
 xgboost
 shap
-pandas
+pandas<2.2.0
 pydantic
-numpy
+numpy<2.0.0
 tensorflow
+keras
 lightgbm
