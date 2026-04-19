@@ -140,7 +140,7 @@ export default function Results() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 2fr', gap: '24px', marginBottom: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '24px', marginBottom: '24px' }}>
         
         {/* Vitals Snapshot */}
         <div className="form-card" style={{ display: 'flex', flexDirection: 'column', padding: '32px 24px', background: 'var(--s2)', marginBottom: 0 }}>
@@ -209,7 +209,7 @@ export default function Results() {
 
       <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px', color: 'var(--text)' }}>Comprehensive Risk Breakdown</h3>
       {/* Comorbidities 3x2 Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: '16px', marginBottom: '24px' }}>
         <ComorbidCard title="Heart Disease" icon={HeartPulse} prob={cvd} color="var(--blue)" onExplain={() => handleKnowMore('cvd', "CVD / Heart Disease")} />
         <ComorbidCard title="Diabetes" icon={Droplets} prob={diabetes} color="var(--amber)" onExplain={() => handleKnowMore('diabetes_A', "Diabetes")} />
         <ComorbidCard title="Hypertension" icon={Activity} prob={hypertension} color="var(--red)" onExplain={() => handleKnowMore('hypertension', "Hypertension")} />

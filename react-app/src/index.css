@@ -377,13 +377,24 @@ nav.app-nav {
   margin-right: 8px;
 }
 
+/* ── Tablet (≤1024px) ── */
+@media (max-width: 1024px) {
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .content-wrap {
+    padding: 32px 20px;
+  }
+}
+
+/* ── Mobile (≤768px) ── */
 @media (max-width: 768px) {
   .mobile-menu-btn {
     display: flex;
   }
-  
+
   .nav-links {
-    display: none; /* hidden by default on mobile */
+    display: none;
     position: absolute;
     top: 60px;
     left: 0;
@@ -397,39 +408,75 @@ nav.app-nav {
     box-shadow: 0 10px 40px rgba(0,0,0,0.5);
     gap: 12px;
   }
-  
+
   .nav-links.mobile-open {
     display: flex;
   }
-  
+
   .nav-user {
     margin-left: 0;
     margin-top: 8px;
     padding: 12px;
   }
-  
+
   .mobile-only-text {
     display: inline-block;
   }
-  
+
   .login-btn {
     margin-left: 0;
     margin-top: 8px;
     padding: 12px;
   }
-  
+
   .theme-toggle {
     margin-right: 0;
   }
-  
-  /* Utility overrides */
+
+  /* Grids → single column */
   .grid-2, .grid-sidebar, .grid-results, .grid-about, .grid-4 {
     grid-template-columns: 1fr !important;
   }
+
   .flex-responsive {
     flex-direction: column !important;
     align-items: flex-start !important;
     gap: 16px;
+  }
+
+  .content-wrap {
+    padding: 24px 16px;
+  }
+
+  /* Touch-friendly inputs */
+  .form-group input:not([type=range]),
+  .form-group select {
+    padding: 14px;
+    font-size: 16px; /* prevents iOS zoom */
+  }
+
+  .btn-primary {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 20px;
+  }
+
+  .form-card {
+    padding: 20px;
+  }
+}
+
+/* ── Small phones (≤480px) ── */
+@media (max-width: 480px) {
+  .content-wrap {
+    padding: 20px 12px;
+  }
+  nav.app-nav {
+    padding: 0 12px;
+    gap: 12px;
+  }
+  .nav-badge {
+    display: none;
   }
 }
 

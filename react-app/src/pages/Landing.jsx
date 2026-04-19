@@ -44,7 +44,7 @@ export default function Landing() {
             <span className="pulse-dot"></span> Built by Team Null Pointers
           </div>
           
-          <h1 style={{fontSize: '56px', fontWeight: '800', marginBottom: '24px', letterSpacing: '-0.03em', lineHeight: 1.1}}>
+          <h1 style={{fontSize: 'clamp(28px, 6vw, 56px)', fontWeight: '800', marginBottom: '24px', letterSpacing: '-0.03em', lineHeight: 1.1}}>
             Digital Twin <span style={{
               background: 'linear-gradient(135deg, var(--blue), var(--indigo), var(--purple))',
               WebkitBackgroundClip: 'text',
@@ -52,7 +52,7 @@ export default function Landing() {
             }}>Health Prediction</span>
           </h1>
           
-          <p style={{fontSize: '18px', color: 'var(--muted)', marginBottom: '40px', lineHeight: 1.6}}>
+          <p style={{fontSize: 'clamp(14px, 2vw, 18px)', color: 'var(--muted)', marginBottom: '40px', lineHeight: 1.6}}>
             Aarogya Twin is a secure, serverless clinical decision support system utilizing 6 simultaneous ML models.
           </p>
 
@@ -63,7 +63,7 @@ export default function Landing() {
 
         {/* DATASET INFO SECTION */}
         <div style={{ marginBottom: '80px' }}>
-          <div style={{display: 'flex', justifyContent: 'center', gap: '40px', flexWrap: 'wrap', padding: '40px', background: 'var(--s2)', borderRadius: '24px', border: '1px solid var(--border)'}}>
+          <div style={{display: 'flex', justifyContent: 'center', gap: 'clamp(16px, 3vw, 40px)', flexWrap: 'wrap', padding: 'clamp(20px, 3vw, 40px)', background: 'var(--s2)', borderRadius: '24px', border: '1px solid var(--border)'}}>
             <Stat val="7,500" lbl="Training Patients" />
             <Stat val="6" lbl="ML Models" />
             <Stat val="95.5%" lbl="CVD Accuracy" />
@@ -135,7 +135,7 @@ function Stat({val, lbl}) {
   return (
     <div style={{textAlign: 'center'}}>
       <div style={{
-        fontSize: '36px', fontWeight: '800', fontFamily: 'var(--mono)',
+        fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: '800', fontFamily: 'var(--mono)',
         background: 'linear-gradient(135deg, var(--blue), var(--cyan))',
         WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
       }}>{val}</div>

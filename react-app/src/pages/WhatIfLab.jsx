@@ -126,7 +126,7 @@ export default function WhatIfLab() {
   return (
     <div className="content-wrap grid-sidebar" style={{ padding: '24px', maxWidth: '1400px' }}>
       
-      <div className="form-card" style={{ padding: '20px', height: 'calc(100vh - 100px)', overflowY: 'auto' }}>
+      <div className="form-card" style={{ padding: '20px', overflowY: 'auto', maxHeight: 'calc(100vh - 100px)' }}>
         <h2 style={{ fontSize: '14px', fontWeight: '600', color: 'var(--muted)', textTransform: 'uppercase', marginBottom: '16px', borderBottom: '1px solid var(--border)', paddingBottom: '8px' }}>
           Intervention Parameters
         </h2>
@@ -205,7 +205,7 @@ export default function WhatIfLab() {
             <SparkLine baseline={baselineProbs.cvd} projected={cvdProb} />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 180px), 1fr))', gap: '12px' }}>
             <RiskTile title="CVD" prob={getProb(serverProbs, 'cvd')} modelKey="cvd" active={targetModel==="cvd"} onClick={setTargetModel} color="var(--blue)" icon={Heart} isCalc={isCalculating} cohort={100 - Math.round(getProb(serverProbs, 'cvd')*100)} />
             <RiskTile title="Diabetes" prob={getProb(serverProbs, 'diabetes_A')} modelKey="diabetes_A" active={targetModel==="diabetes_A"} onClick={setTargetModel} color="var(--amber)" icon={Droplets} isCalc={isCalculating} cohort={100 - Math.round(getProb(serverProbs, 'diabetes_A')*100)} />
             <RiskTile title="Hypertension" prob={getProb(serverProbs, 'hypertension')} modelKey="hypertension" active={targetModel==="hypertension"} onClick={setTargetModel} color="var(--red)" icon={Activity} isCalc={isCalculating} cohort={100 - Math.round(getProb(serverProbs, 'hypertension')*100)} />
@@ -229,7 +229,7 @@ export default function WhatIfLab() {
                 const maxPct = Math.max(...contributions.map(x => x.pct || 0), 1);
                 const color = c.direction.includes('increases') ? 'var(--red)' : 'var(--green)';
                 return (
-                  <div key={i} style={{ display: 'grid', gridTemplateColumns: '140px 1fr 50px', alignItems: 'center', gap: '12px' }}>
+                  <div key={i} style={{ display: 'grid', gridTemplateColumns: 'minmax(80px,140px) 1fr 50px', alignItems: 'center', gap: '8px' }}>
                     <div style={{ fontSize: '11px', color: 'var(--text)', textAlign: 'right', fontWeight: '500' }}>{LABELS[c.name] || c.name}</div>
                     <div style={{ background: 'var(--s3)', height: '6px', borderRadius: '3px' }}>
                       <div style={{ width: `${(c.pct / maxPct) * 100}%`, background: color, height: '100%', borderRadius: '3px', transition: '0.5s cubic-bezier(0.4, 0, 0.2, 1)' }} />

@@ -17,7 +17,7 @@ export default function PatientDashboard() {
   return (
     <div className="content-wrap" style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px' }}>
       {/* Hero Header */}
-      <div className="form-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '40px', background: 'var(--s2)', marginBottom: '24px', border: '1px solid var(--border)', position: 'relative', overflow: 'hidden' }}>
+      <div className="form-card" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', padding: '40px', background: 'var(--s2)', marginBottom: '24px', border: '1px solid var(--border)', position: 'relative', overflow: 'hidden', gap: '24px' }}>
         <div style={{ position: 'absolute', top: 0, right: 0, width: '400px', height: '100%', background: 'radial-gradient(ellipse at right, rgba(79,142,247,0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
         
         <div style={{ flex: 1, zIndex: 1 }}>
@@ -37,7 +37,7 @@ export default function PatientDashboard() {
           </p>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '300px', zIndex: 1 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', maxWidth: '300px', minWidth: '240px', flex: '1 1 240px', zIndex: 1 }}>
           <button className="btn-primary" onClick={() => navigate('/assess')} style={{padding: '16px', fontSize: '14px', borderRadius: '8px', justifyContent: 'center'}}>
             <Activity size={18} style={{marginRight: '8px'}} /> Run Diagnostic Assessment
           </button>
@@ -62,7 +62,7 @@ export default function PatientDashboard() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(600px, 2fr) minmax(300px, 1fr)', gap: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))', gap: '24px' }}>
         
         {/* Left Column: AI Models */}
         <div>
@@ -71,7 +71,7 @@ export default function PatientDashboard() {
             <span style={{ fontSize: '12px', color: 'var(--green)', display: 'flex', alignItems: 'center', gap: '4px' }}><ShieldCheck size={14}/> All systems functional</span>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 200px), 1fr))', gap: '16px' }}>
             <ModelCard icon={Heart} title="Cardiovascular Event" color="var(--blue)" acc="96.2%" type="Classification Network" />
             <ModelCard icon={Droplets} title="Diabetes Progression" color="var(--amber)" acc="94.1%" type="Gradient Boosting" />
             <ModelCard icon={Activity} title="Hypertension Risk" color="var(--red)" acc="92.8%" type="Ensemble Model" />
