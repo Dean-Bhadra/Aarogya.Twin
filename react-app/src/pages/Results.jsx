@@ -235,6 +235,7 @@ export default function Results() {
           <div style={{ height: '240px' }}><Radar data={radarData} options={radarOptions} /></div>
         </div>
       </div>
+      </div>
 
       {modalData && <ExplainModal data={modalData} onClose={() => setModalData(null)} />}
     </div>
