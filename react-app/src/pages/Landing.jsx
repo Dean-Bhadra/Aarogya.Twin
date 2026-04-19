@@ -64,7 +64,7 @@ export default function Landing() {
         {/* DATASET INFO SECTION */}
         <div style={{ marginBottom: '80px' }}>
           <div style={{display: 'flex', justifyContent: 'center', gap: 'clamp(16px, 3vw, 40px)', flexWrap: 'wrap', padding: 'clamp(20px, 3vw, 40px)', background: 'var(--s2)', borderRadius: '24px', border: '1px solid var(--border)'}}>
-            <Stat val="7,500" lbl="Training Patients" />
+            <Stat val="300,000+" lbl="Training Patients" />
             <Stat val="6" lbl="ML Models" />
             <Stat val="0.991" lbl="CVD AUC" />
             <Stat val="0.984" lbl="Diabetes AUC" />
