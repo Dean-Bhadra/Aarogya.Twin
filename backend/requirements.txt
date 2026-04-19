@@ -1,11 +1,12 @@
 fastapi
 uvicorn
-scikit-learn
+scikit-learn==1.2.2
 xgboost
 shap
 pandas<2.2.0
 pydantic
 numpy<2.0.0
-tensorflow
-keras
+tensorflow<2.16.0
+keras<3.0.0
+tf-keras
 lightgbm
