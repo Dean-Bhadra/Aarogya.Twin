@@ -36,6 +36,12 @@ import pickle
 import os
 
 try:
+    import lightgbm as lgb
+    LGB_AVAILABLE = True
+except ImportError:
+    LGB_AVAILABLE = False
+
+try:
     import shap
     SHAP_AVAILABLE = True
 except ImportError:
@@ -103,18 +109,20 @@ sleep_features  = load_pkl("Sleep_Disorder/sleep_features.pkl")      # list of f
 sleep_medians   = load_pkl("Sleep_Disorder/sleep_medians.pkl")       # dict or Series
 explainer_sleep = load_pkl("Sleep_Disorder/explainer_sleep.pkl")     # pre-built SHAP explainer
 
-# Stress
-stress_model = load_pkl("Stress_Risk/final_stress_model_v2.pkl")
-if stress_model is None:
-    print("  [WARNING] Stress model failed via PKL, attempting Base64 decode injection...")
-    try:
-        import base64
-        from Models_New.Stress_Risk.stress_b64 import b64_string
-        stress_bytes = base64.b64decode(b64_string)
-        stress_model = pickle.loads(stress_bytes)
-        print("  [OK] Loaded: Stress Model via Base64 Injection")
-    except Exception as e:
-        print(f"  [ERROR] Base64 injection failed: {e}")
+# Stress — load via LightGBM native text format (immune to pickle issues)
+stress_model = None
+if LGB_AVAILABLE:
+    stress_native_path = os.path.join(BASE, "Models_New", "Stress_Risk", "stress_model_native.txt")
+    if os.path.exists(stress_native_path):
+        try:
+            stress_model = lgb.Booster(model_file=stress_native_path)
+            print(f"  [OK] Loaded: Stress_Risk/stress_model_native.txt  [Booster, {stress_model.num_trees()} trees]")
+        except Exception as e:
+            print(f"  [ERROR] Failed to load stress native model: {e}")
+    else:
+        print(f"  [!] Missing: Stress_Risk/stress_model_native.txt")
+else:
+    print("  [!] lightgbm not available, stress model skipped")
 
 print("----------------------------------------------------\n")
 
@@ -167,6 +175,18 @@ STRESS_FEATURES = [
     "systolic_bp", "diastolic_bp",
 ]
 
+# The actual stress model's 29 features (from training)
+STRESS_NATIVE_FEATURES = [
+    "Age", "Gender", "Weight", "Height", "Medical_Conditions",
+    "Medication", "Smoker", "Alcohol_Consumption", "Day_of_Week",
+    "Sleep_Duration", "Deep_Sleep_Duration", "REM_Sleep_Duration",
+    "Wakeups", "Snoring", "Heart_Rate", "Blood_Oxygen_Level", "ECG",
+    "Calories_Intake", "Water_Intake", "Mood", "Skin_Temperature",
+    "Body_Fat_Percentage", "Muscle_Mass", "Health_Score",
+    "Anomaly_Flag", "BMI", "Sleep_Quality", "Stress_Ratio",
+    "Lifestyle_Score",
+]
+
 # Resolve actual feature lists dynamically from XGBoost models
 def resolve_features(model, loaded, default):
     if hasattr(model, "feature_names_in_"):
@@ -187,7 +207,7 @@ FEAT = {
     "hypertension":resolve_features(hyp_model, None, HYP_FEATURES),
     "obesity":     OBESITY_FEATURES,
     "sleep":       resolve_features(sleep_model, sleep_features, SLEEP_FEATURES_DEFAULT),
-    "stress":      STRESS_FEATURES,
+    "stress":      STRESS_NATIVE_FEATURES if stress_model and hasattr(stress_model, 'num_trees') else STRESS_FEATURES,
 }
 
 # Resolve medians (for imputing missing fields)
@@ -242,6 +262,9 @@ def build_X(patient_data: dict, feature_list: list, medians: dict = {}) -> np.nd
     row  = []
     for f in feature_list:
         val = patient_data.get(f)
+        # Fallback: try lowercase version of feature name (handles Capitalized model features)
+        if val is None:
+            val = patient_data.get(f.lower())
         if val is None:
             val = medians.get(f, 0)
         row.append(float(val))
