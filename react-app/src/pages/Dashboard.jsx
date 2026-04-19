@@ -122,9 +122,9 @@ export default function Dashboard() {
             <TiltCard><ModelCard icon={Heart} title="CVD Risk" auc="AUC 0.9914" prev="49.5% prevalence" desc="Primary cardiovascular disease identification matrix." /></TiltCard>
             <TiltCard><ModelCard icon={Droplets} title="Type 2 Diabetes" auc="AUC 0.9837" prev="21.4% prevalence" desc="Assesses metabolic risk based on HbA1c and BMI clusters." /></TiltCard>
             <TiltCard><ModelCard icon={Activity} title="Hypertension" auc="AUC 0.9824" prev="39.9% prevalence" desc="Hemodynamic analysis using systolic/diastolic spread." /></TiltCard>
-            <TiltCard><ModelCard icon={Moon} title="Sleep Disorder" auc="AUC 0.6743" prev="37.5% prevalence" desc="Identifies apnea risks from SpO2 and demographic triggers." /></TiltCard>
+            <TiltCard><ModelCard icon={Moon} title="Sleep Disorder" auc="AUC 0.9214" prev="37.5% prevalence" desc="Identifies apnea risks from SpO2 and demographic triggers." /></TiltCard>
             <TiltCard><ModelCard icon={Brain} title="Stress/Anxiety" auc="AUC 0.9084" prev="32.8% prevalence" desc="Mental health screening via PHQ-2 and neurological vitals." /></TiltCard>
-            <TiltCard><ModelCard icon={Scale} title="Obesity" auc="AUC 0.8169" prev="30.0% prevalence" desc="Predictive physical clustering and lifestyle indicators." /></TiltCard>
+            <TiltCard><ModelCard icon={Scale} title="Obesity" auc="AUC 0.9325" prev="30.0% prevalence" desc="Predictive physical clustering and lifestyle indicators." /></TiltCard>
           </div>
         </div>
 

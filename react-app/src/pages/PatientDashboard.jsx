@@ -72,12 +72,12 @@ export default function PatientDashboard() {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 200px), 1fr))', gap: '16px' }}>
-            <ModelCard icon={Heart} title="Cardiovascular Event" color="var(--blue)" acc="96.2%" type="Classification Network" />
-            <ModelCard icon={Droplets} title="Diabetes Progression" color="var(--amber)" acc="94.1%" type="Gradient Boosting" />
-            <ModelCard icon={Activity} title="Hypertension Risk" color="var(--red)" acc="92.8%" type="Ensemble Model" />
-            <ModelCard icon={Scale} title="Obesity Index" color="var(--cyan)" acc="89.5%" type="Decision Tree" />
-            <ModelCard icon={Moon} title="Sleep Disorder" color="var(--indigo)" acc="91.4%" type="Causal Inference" />
-            <ModelCard icon={Brain} title="Psychological Stress" color="var(--purple)" acc="88.7%" type="Neural Baseline" />
+            <ModelCard icon={Heart} title="Cardiovascular Event" color="var(--blue)" acc="AUC 0.991" type="Classification Network" />
+            <ModelCard icon={Droplets} title="Diabetes Progression" color="var(--amber)" acc="AUC 0.984" type="Gradient Boosting" />
+            <ModelCard icon={Activity} title="Hypertension Risk" color="var(--red)" acc="AUC 0.982" type="Ensemble Model" />
+            <ModelCard icon={Scale} title="Obesity Index" color="var(--cyan)" acc="AUC 0.933" type="Decision Tree" />
+            <ModelCard icon={Moon} title="Sleep Disorder" color="var(--indigo)" acc="AUC 0.921" type="Causal Inference" />
+            <ModelCard icon={Brain} title="Psychological Stress" color="var(--purple)" acc="AUC 0.908" type="Neural Baseline" />
           </div>
         </div>
 

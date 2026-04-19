@@ -14,7 +14,7 @@ export default function DoctorDashboard() {
   const [patients, setPatients] = useState(
     MOCK_PATIENTS.map(p => {
       const risks = predictAll(p.inputs);
-      const cvdRisk = +(risks.cvd * 100).toFixed(1);
+      const cvdRisk = risks.cvd ? risks.cvd.probability : 0;
       return { ...p, cvdRisk, status: 'pending', risks };
     })
   );

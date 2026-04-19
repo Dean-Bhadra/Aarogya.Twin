@@ -66,8 +66,8 @@ export default function Landing() {
           <div style={{display: 'flex', justifyContent: 'center', gap: 'clamp(16px, 3vw, 40px)', flexWrap: 'wrap', padding: 'clamp(20px, 3vw, 40px)', background: 'var(--s2)', borderRadius: '24px', border: '1px solid var(--border)'}}>
             <Stat val="7,500" lbl="Training Patients" />
             <Stat val="6" lbl="ML Models" />
-            <Stat val="95.5%" lbl="CVD Accuracy" />
             <Stat val="0.991" lbl="CVD AUC" />
+            <Stat val="0.984" lbl="Diabetes AUC" />
           </div>
         </div>
 
@@ -120,9 +120,9 @@ export default function Landing() {
             <TiltCard><ModelCard icon={Heart} title="CVD Risk" auc="AUC 0.9914" prev="49.5% prevalence" desc="Primary cardiovascular disease identification matrix." /></TiltCard>
             <TiltCard><ModelCard icon={Droplets} title="Type 2 Diabetes" auc="AUC 0.9837" prev="21.4% prevalence" desc="Assesses metabolic risk based on HbA1c and BMI clusters." /></TiltCard>
             <TiltCard><ModelCard icon={Activity} title="Hypertension" auc="AUC 0.9824" prev="39.9% prevalence" desc="Hemodynamic analysis using systolic/diastolic spread." /></TiltCard>
-            <TiltCard><ModelCard icon={Moon} title="Sleep Disorder" auc="AUC 0.6743" prev="37.5% prevalence" desc="Identifies apnea risks from SpO2 and demographic triggers." /></TiltCard>
+            <TiltCard><ModelCard icon={Moon} title="Sleep Disorder" auc="AUC 0.9214" prev="37.5% prevalence" desc="Identifies apnea risks from SpO2 and demographic triggers." /></TiltCard>
             <TiltCard><ModelCard icon={Brain} title="Stress/Anxiety" auc="AUC 0.9084" prev="32.8% prevalence" desc="Mental health screening via PHQ-2 and neurological vitals." /></TiltCard>
-            <TiltCard><ModelCard icon={Scale} title="Obesity" auc="AUC 0.8169" prev="30.0% prevalence" desc="Predictive physical clustering and lifestyle indicators." /></TiltCard>
+            <TiltCard><ModelCard icon={Scale} title="Obesity" auc="AUC 0.9325" prev="30.0% prevalence" desc="Predictive physical clustering and lifestyle indicators." /></TiltCard>
           </div>
         </div>
 
