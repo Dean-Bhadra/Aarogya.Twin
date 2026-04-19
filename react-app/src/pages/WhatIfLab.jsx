@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
-import { ArrowLeft, Beaker, Save, RefreshCw, XCircle, Droplets, Activity, Moon, Brain, Heart } from 'lucide-react';
+import { ArrowLeft, Beaker, Save, RefreshCw, XCircle, Droplets, Activity, Moon, Brain, Heart, Download } from 'lucide-react';
+import { exportToPdf } from '../utils/exportPdf';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const LABELS = {
@@ -175,9 +176,12 @@ export default function WhatIfLab() {
         <button className="btn-primary" style={{ width: '100%', justifyContent: 'center', background: 'var(--s3)', color: 'var(--text)', border: '1px solid var(--border)' }} onClick={() => setData(initData)}>
           <RefreshCw size={14} /> Reset to Baseline
         </button>
+        <button className="btn-primary" style={{ width: '100%', justifyContent: 'center', background: 'var(--blue)', color: '#fff', border: 'none', marginTop: '12px' }} onClick={() => exportToPdf('export-region', `WhatIf_Simulation_${targetModel}.pdf`)}>
+          <Download size={16} /> Export Simulation
+        </button>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div id="export-region" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>

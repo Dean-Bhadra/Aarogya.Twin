@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
-import { Beaker, ArrowLeft, AlertCircle, HeartPulse, Brain, Droplets, Moon, Scale, Activity, Info, X } from 'lucide-react';
+import { Beaker, ArrowLeft, AlertCircle, HeartPulse, Brain, Droplets, Moon, Scale, Activity, Info, X, Download } from 'lucide-react';
+import { exportToPdf } from '../utils/exportPdf';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, RadialLinearScale, PointElement, LineElement, Tooltip, Legend } from 'chart.js';
 import { Bar, Radar } from 'react-chartjs-2';
 import api from '../utils/api';
@@ -130,15 +131,20 @@ export default function Results() {
           <h1 style={{ fontSize: '28px', marginBottom: '4px' }}>Patient Risk Profile</h1>
           <p style={{ color: 'var(--muted)' }}>Analysis complete · {new Date().toLocaleDateString()}</p>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          <button className="btn-primary" onClick={() => exportToPdf('export-region', 'Patient_Risk_Profile.pdf')} style={{ background: 'var(--blue)', color: '#fff', border: 'none' }}>
+            <Download size={16} /> Export PDF
+          </button>
           <button className="btn-primary" onClick={() => navigate('/assess')} style={{ background: 'var(--s3)', border: '1px solid var(--border)', color: 'var(--text)' }}>
             <ArrowLeft size={16} /> Re-assess
           </button>
           <button className="btn-primary" onClick={() => navigate('/whatif', { state: { initialData: inputs, baselineProbs: results } })}>
-            <Beaker size={16} /> Open Simulation Lab
+            <Beaker size={16} /> Simulation Lab
           </button>
         </div>
       </div>
+
+      <div id="export-region">
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '24px', marginBottom: '24px' }}>
         
