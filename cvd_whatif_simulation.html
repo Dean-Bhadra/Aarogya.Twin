@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>CVD What-If Simulation Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #141720;
+    --surface2: #1c2030;
+    --border: #262c3e;
+    --accent: #3b82f6;
+    --accent2: #6366f1;
+    --danger: #ef4444;
+    --warn: #f59e0b;
+    --good: #10b981;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --mono: 'DM Mono', monospace;
+    --sans: 'Sora', sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;min-height:100vh}
+  
+  /* Layout */
+  .shell{display:grid;grid-template-columns:320px 1fr;grid-template-rows:56px 1fr;min-height:100vh}
+  .topbar{grid-column:1/-1;display:flex;align-items:center;gap:16px;padding:0 24px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+  .topbar .logo{font-size:13px;font-weight:600;letter-spacing:.08em;color:var(--accent);text-transform:uppercase;font-family:var(--mono)}
+  .topbar .title{font-size:14px;font-weight:500;color:var(--text)}
+  .topbar .badge{margin-left:auto;display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .topbar .badge .dot{width:6px;height:6px;border-radius:50%;background:var(--good);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  
+  /* Sidebar */
+  .sidebar{background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:16px}
+  .section-hd{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:12px 0 8px;border-bottom:1px solid var(--border);margin-bottom:12px}
+  
+  /* Form fields */
+  .field{margin-bottom:12px}
+  .field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;font-family:var(--mono)}
+  .field input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
+  .field .val{float:right;font-family:var(--mono);font-size:11px;color:var(--text)}
+  .field select,.field input[type=number]{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:6px 8px;border-radius:6px;font-family:var(--mono);font-size:12px;outline:none}
+  .field select:focus,.field input[type=number]:focus{border-color:var(--accent)}
+  
+  /* Toggle grid */
+  .toggle-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
+  .tog{display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;cursor:pointer;transition:all .15s;user-select:none}
+  .tog:hover{border-color:var(--accent)}
+  .tog.on{background:rgba(59,130,246,.12);border-color:var(--accent)}
+  .tog .cb{width:14px;height:14px;border-radius:3px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+  .tog.on .cb{background:var(--accent);border-color:var(--accent)}
+  .tog .cb svg{display:none}
+  .tog.on .cb svg{display:block}
+  .tog span{font-size:10px;font-family:var(--mono);color:var(--muted);line-height:1.2}
+  .tog.on span{color:var(--text)}
+  
+  /* Main panel */
+  .main{padding:24px;overflow-y:auto;display:flex;flex-direction:column;gap:20px}
+  
+  /* Risk gauge */
+  .gauge-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;align-items:center}
+  .gauge-wrap{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .gauge-wrap svg{overflow:visible}
+  .risk-num{font-family:var(--mono);font-size:42px;font-weight:500;text-align:center;transition:color .3s}
+  .risk-label{font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;text-align:center}
+  .risk-tier{font-size:13px;font-weight:600;text-align:center;margin-top:4px}
+  
+  /* Stats grid */
+  .stats-grid{display:flex;flex-direction:column;gap:10px}
+  .stat-row{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface2);border-radius:6px}
+  .stat-row .sk{font-size:11px;color:var(--muted);font-family:var(--mono)}
+  .stat-row .sv{font-size:12px;font-weight:500;font-family:var(--mono)}
+  
+  /* Scenario compare */
+  .compare-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)}
+  .compare-row:last-child{border:none}
+  .compare-row .cn{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .compare-row .cb2{font-family:var(--mono);font-size:11px;font-weight:500}
+  .arrow-delta{font-size:11px;font-family:var(--mono);padding:2px 6px;border-radius:4px}
+  .delta-up{background:rgba(239,68,68,.15);color:var(--danger)}
+  .delta-dn{background:rgba(16,185,129,.15);color:var(--good)}
+  .delta-eq{background:var(--surface2);color:var(--muted)}
+
+  /* Feature importance bar */
+  .feat-bar-wrap{display:flex;flex-direction:column;gap:6px}
+  .feat-bar-row{display:grid;grid-template-columns:130px 1fr 48px;align-items:center;gap:8px}
+  .feat-bar-row .fn{font-size:10px;font-family:var(--mono);color:var(--muted);text-align:right}
+  .feat-bar-bg{background:var(--surface2);border-radius:3px;height:8px;overflow:hidden}
+  .feat-bar-fill{height:100%;border-radius:3px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+  .feat-bar-row .fv{font-size:10px;font-family:var(--mono);color:var(--text)}
+
+  /* Cards */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px}
+  .card-title{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px}
+
+  /* Scenario buttons */
+  .scenario-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+  .scen-btn{padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:var(--mono);font-size:10px;cursor:pointer;transition:all .15s;text-align:center;line-height:1.4}
+  .scen-btn:hover{border-color:var(--accent);color:var(--text)}
+  .scen-btn.active{background:rgba(59,130,246,.1);border-color:var(--accent);color:var(--accent)}
+
+  /* Snapshot */
+  .snap-list{display:flex;flex-direction:column;gap:6px}
+  .snap-item{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--surface2);border-radius:6px;cursor:pointer;border:1px solid transparent;transition:all .15s}
+  .snap-item:hover{border-color:var(--border)}
+  .snap-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .snap-label{flex:1;font-family:var(--mono);font-size:11px}
+  .snap-prob{font-family:var(--mono);font-size:11px;font-weight:500}
+  .snap-del{font-size:10px;color:var(--muted);cursor:pointer;padding:2px 6px;border-radius:4px}
+  .snap-del:hover{background:rgba(239,68,68,.2);color:var(--danger)}
+  
+  .btn{padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.04em;transition:all .15s}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:hover{background:#2563eb}
+  .btn-ghost{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+  .btn-ghost:hover{color:var(--text);border-color:var(--accent)}
+  .btn-row{display:flex;gap:8px;margin-top:12px}
+
+  .divider{height:1px;background:var(--border);margin:8px 0}
+  
+  /* Two-col layout in main */
+  .main-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  
+  .hint{font-size:11px;color:var(--muted);font-family:var(--mono);line-height:1.6;padding:10px;background:var(--surface2);border-radius:6px;border-left:3px solid var(--accent)}
+
+  /* Heart icon animation */
+  @keyframes heartbeat{0%,100%{transform:scale(1)}20%{transform:scale(1.15)}40%{transform:scale(1)}}
+  .heartbeat{animation:heartbeat 1.2s ease-in-out infinite}
+
+  /* scrollbar */
+  ::-webkit-scrollbar{width:4px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="logo">CVD·SIM</div>
+    <div class="title">Cardiovascular Disease — What-If Simulation Engine</div>
+    <div class="badge">
+      <div class="dot"></div>
+      GBM · 95.5% acc · AUC 0.988 · n=7,500
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="section-hd">Demographics</div>
+    
+    <div class="field">
+      <label>Age <span class="val" id="vAge">58</span></label>
+      <input type="range" id="sAge" min="28" max="88" value="58" oninput="sync('Age',this.value);predict()">
+    </div>
+    <div class="field">
+      <label>Sex</label>
+      <select id="sGender" onchange="predict()">
+        <option value="0">Female</option>
+        <option value="1" selected>Male</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Marital status</label>
+      <select id="sMarried" onchange="predict()">
+        <option value="0" selected>Single / Other</option>
+        <option value="1">Married</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Race / Ethnicity</label>
+      <select id="sRace" onchange="predict()">
+        <option value="white" selected>White</option>
+        <option value="black">Black</option>
+        <option value="asian">Asian</option>
+        <option value="hispanic">Hispanic</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Annual Income ($) <span class="val" id="vIncome">50,000</span></label>
+      <input type="range" id="sIncome" min="12000" max="200000" step="1000" value="50000" oninput="syncIncome(this.value);predict()">
+    </div>
+
+    <div class="section-hd">Conditions</div>
+    <div class="toggle-grid">
+      <div class="tog" id="tDiabetes" onclick="tog('Diabetes')">
+        <div class="cb"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>
+        <span>Diabetes</span>
+      </div>
+      <div class="tog" id="tHypertension" onclick="tog('Hypertension')">
+        <div class="cb"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>
+        <span>Hypertension</span>
+      </div>
+      <div class="tog" id="tSleep" onclick="tog('Sleep')">
+        <div class="cb"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>
+        <span>Sleep Disorder</span>
+      </div>
+      <div class="tog" id="tStress" onclick="tog('Stress')">
+        <div class="cb"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>
+        <span>Stress / Anxiety</span>
+      </div>
+      <div class="tog" id="tObesity" onclick="tog('Obesity')">
+        <div class="cb"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>
+        <span>Obesity</span>
+      </div>
+      <div class="tog" id="tCholesterol" onclick="tog('Cholesterol')">
+        <div class="cb"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>
+        <span>High Chol.</span>
+      </div>
+    </div>
+
+    <div class="section-hd">Vitals</div>
+    <div class="field">
+      <label>Height (cm) <span class="val" id="vHeight">166</span></label>
+      <input type="range" id="sHeight" min="140" max="205" value="166" oninput="sync('Height',this.value);syncBMI();predict()">
+    </div>
+    <div class="field">
+      <label>Weight (kg) <span class="val" id="vWeight">78</span></label>
+      <input type="range" id="sWeight" min="44" max="140" value="78" oninput="sync('Weight',this.value);syncBMI();predict()">
+    </div>
+    <div class="field">
+      <label>BMI <span class="val" id="vBMI">28.3</span></label>
+      <input type="range" id="sBMI" min="12" max="60" step="0.1" value="28.3" oninput="sync('BMI',this.value,1);predict()">
+    </div>
+    <div class="field">
+      <label>Systolic BP (mmHg) <span class="val" id="vSystolic">130</span></label>
+      <input type="range" id="sSystolic" min="85" max="195" value="130" oninput="sync('Systolic',this.value);predict()">
+    </div>
+    <div class="field">
+      <label>Diastolic BP (mmHg) <span class="val" id="vDiastolic">83</span></label>
+      <input type="range" id="sDiastolic" min="45" max="120" value="83" oninput="sync('Diastolic',this.value);predict()">
+    </div>
+    <div class="field">
+      <label>Heart Rate (bpm) <span class="val" id="vHR">78</span></label>
+      <input type="range" id="sHR" min="42" max="124" value="78" oninput="sync('HR',this.value);predict()">
+    </div>
+    <div class="field">
+      <label>SpO₂ (%) <span class="val" id="vSpo2">96</span></label>
+      <input type="range" id="sSpo2" min="85" max="100" step="0.1" value="96" oninput="sync('Spo2',this.value,1);predict()">
+    </div>
+    <div class="field">
+      <label>Respiratory Rate (br/min) <span class="val" id="vResp">19</span></label>
+      <input type="range" id="sResp" min="10" max="30" value="19" oninput="sync('Resp',this.value);predict()">
+    </div>
+
+    <div class="section-hd">Labs & Scores</div>
+    <div class="field">
+      <label>HbA1c (%) <span class="val" id="vHba1c">5.6</span></label>
+      <input type="range" id="sHba1c" min="3.5" max="12" step="0.1" value="5.6" oninput="sync('Hba1c',this.value,1);predict()">
+    </div>
+    <div class="field">
+      <label>PHQ-2 Score <span class="val" id="vPHQ">2</span></label>
+      <input type="range" id="sPHQ" min="0" max="6" value="2" oninput="sync('PHQ',this.value);predict()">
+    </div>
+    <div class="field">
+      <label>Alcohol Score <span class="val" id="vAlcohol">3.5</span></label>
+      <input type="range" id="sAlcohol" min="0" max="10" step="0.1" value="3.5" oninput="sync('Alcohol',this.value,1);predict()">
+    </div>
+
+    <div class="divider"></div>
+    <button class="btn btn-ghost" style="width:100%;margin-top:4px" onclick="resetDefaults()">↺ Reset to Medians</button>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    
+    <!-- GAUGE ROW -->
+    <div class="gauge-card">
+      <!-- Gauge -->
+      <div class="gauge-wrap">
+        <svg width="180" height="110" viewBox="0 0 180 110">
+          <defs>
+            <linearGradient id="gaugeFill" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#10b981"/>
+              <stop offset="50%" stop-color="#f59e0b"/>
+              <stop offset="100%" stop-color="#ef4444"/>
+            </linearGradient>
+          </defs>
+          <!-- Track -->
+          <path d="M 20 100 A 70 70 0 0 1 160 100" fill="none" stroke="#1c2030" stroke-width="14" stroke-linecap="round"/>
+          <!-- Fill -->
+          <path id="gaugeArc" d="M 20 100 A 70 70 0 0 1 160 100" fill="none" stroke="url(#gaugeFill)" stroke-width="14" stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220" style="transition:stroke-dashoffset .5s cubic-bezier(.4,0,.2,1)"/>
+          <!-- Needle -->
+          <line id="gaugeNeedle" x1="90" y1="100" x2="90" y2="38" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round" style="transform-origin:90px 100px;transform:rotate(-90deg);transition:transform .5s cubic-bezier(.4,0,.2,1)"/>
+          <circle cx="90" cy="100" r="5" fill="#e2e8f0"/>
+          <text x="18" y="118" fill="#64748b" font-size="10" font-family="DM Mono">Low</text>
+          <text x="144" y="118" fill="#64748b" font-size="10" font-family="DM Mono">High</text>
+        </svg>
+        <div class="risk-num" id="riskNum">—</div>
+        <div class="risk-label">CVD probability</div>
+        <div class="risk-tier" id="riskTier">—</div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-row"><span class="sk">Model</span><span class="sv">GBM + LR Ensemble</span></div>
+        <div class="stat-row"><span class="sk">Accuracy</span><span class="sv" style="color:var(--good)">95.47%</span></div>
+        <div class="stat-row"><span class="sk">ROC-AUC</span><span class="sv" style="color:var(--good)">0.9877</span></div>
+        <div class="stat-row"><span class="sk">5-Fold CV</span><span class="sv" style="color:var(--good)">0.9894 ±.002</span></div>
+        <div class="stat-row"><span class="sk">Dataset</span><span class="sv">n=7,500 (49.5% CVD)</span></div>
+        <div class="stat-row"><span class="sk">Features</span><span class="sv">25 clinical features</span></div>
+      </div>
+
+      <!-- Snapshot controls -->
+      <div>
+        <div class="card-title">Scenario snapshots</div>
+        <div class="snap-list" id="snapList">
+          <div style="font-size:11px;color:var(--muted);font-family:var(--mono);padding:8px 0">Save scenarios to compare side-by-side</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="saveSnap()">+ Save snapshot</button>
+          <button class="btn btn-ghost" onclick="clearSnaps()">Clear all</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK SCENARIOS -->
+    <div class="card">
+      <div class="card-title">Quick Scenarios — click to load</div>
+      <div class="scenario-grid">
+        <div class="scen-btn" onclick="loadScenario('young_healthy')">🟢 Young &amp; Healthy<br>Age 32, low risk</div>
+        <div class="scen-btn" onclick="loadScenario('middle_hyp')">🟡 Mid-age Hypertensive<br>Age 52, BP issues</div>
+        <div class="scen-btn" onclick="loadScenario('elderly_multi')">🔴 Elderly Multi-comorbid<br>Age 72, high risk</div>
+        <div class="scen-btn" onclick="loadScenario('diabetic_obese')">🟠 Diabetic + Obese<br>Age 58, metabolic</div>
+        <div class="scen-btn" onclick="loadScenario('smoker_stress')">🟠 High Stress<br>Age 45, anxious</div>
+        <div class="scen-btn" onclick="loadScenario('optimal_treatment')">💊 Post-Treatment<br>Optimised profile</div>
+      </div>
+      <div class="hint" id="scenHint">← Select a quick scenario above or adjust sliders to simulate what-if changes in real time.</div>
+    </div>
+
+    <!-- FEATURE IMPORTANCE + COMPARE -->
+    <div class="main-grid">
+
+      <div class="card">
+        <div class="card-title">Feature contribution to this prediction</div>
+        <div class="feat-bar-wrap" id="featBars"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Snapshot comparison</div>
+        <div id="comparePanel">
+          <div style="font-size:11px;color:var(--muted);font-family:var(--mono)">Save 2+ snapshots to see a side-by-side delta comparison.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- INTERVENTION SIMULATOR -->
+    <div class="card">
+      <div class="card-title">Intervention simulator — what if the patient improved?</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+        <div class="scen-btn" onclick="intervene('bp')">💊 Treat BP<br>Sys→120, Dia→78</div>
+        <div class="scen-btn" onclick="intervene('weight')">⚖️ Lose 10kg<br>Weight –10kg</div>
+        <div class="scen-btn" onclick="intervene('alcohol')">🚫 Quit Alcohol<br>Score → 0</div>
+        <div class="scen-btn" onclick="intervene('spo2')">💨 Improve SpO₂<br>SpO₂ → 98.5</div>
+        <div class="scen-btn" onclick="intervene('stress')">🧘 Manage Stress<br>PHQ-2 → 0, stress off</div>
+        <div class="scen-btn" onclick="intervene('all')">✨ All Interventions<br>Full optimisation</div>
+        <div class="scen-btn" onclick="intervene('diabetes')">💉 Control Diabetes<br>HbA1c → 5.5</div>
+        <div class="scen-btn" onclick="intervene('chol')">💊 Statin Therapy<br>High Chol → off</div>
+      </div>
+      <div class="hint" style="margin-top:10px" id="intervenHint">Select an intervention above to see its impact on CVD risk immediately.</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── Model: Logistic Regression weights from trained GBM-calibrated coefficients ──
+const MODEL = {
+  features: ["age","gender_enc","is_married","race_white","race_black","race_asian","race_hispanic","income","has_diabetes","has_hypertension","has_sleep_disorder","has_stress_anxiety","has_obesity","has_high_cholesterol","height_cm","weight_kg","diastolic_bp","heart_rate","hba1c","spo2","phq2_score","resp_rate","systolic_bp","alcohol_score","bmi"],
+  continuous: ["age","income","height_cm","weight_kg","diastolic_bp","systolic_bp","heart_rate","hba1c","spo2","phq2_score","resp_rate","alcohol_score","bmi"],
+  sMin: {age:28,income:12000,height_cm:140,weight_kg:44,diastolic_bp:45,systolic_bp:85,heart_rate:42,hba1c:3.5,spo2:89.1,phq2_score:0,resp_rate:10,alcohol_score:0,bmi:11.7},
+  sMax: {age:88,income:200000,height_cm:203.5,weight_kg:137.5,diastolic_bp:120,systolic_bp:195,heart_rate:124.3,hba1c:9.5,spo2:100,phq2_score:6,resp_rate:30,alcohol_score:10,bmi:59.57},
+  coef: {age:1.3561,gender_enc:0.148,is_married:0.0553,race_white:-0.2877,race_black:-0.1129,race_asian:-0.2474,race_hispanic:-0.2581,income:-0.1098,has_diabetes:0.5218,has_hypertension:0.4537,has_sleep_disorder:0.0947,has_stress_anxiety:0.4263,has_obesity:0.2852,has_high_cholesterol:0.4275,height_cm:-0.3446,weight_kg:0.0709,diastolic_bp:0.2902,heart_rate:6.7228,hba1c:0.0973,spo2:-11.1615,phq2_score:-0.2721,resp_rate:11.7481,systolic_bp:0.4505,alcohol_score:3.5493,bmi:-0.2829},
+  intercept: -3.2144
+};
+
+function scale(feat, val) {
+  if (!MODEL.continuous.includes(feat)) return val;
+  return (val - MODEL.sMin[feat]) / (MODEL.sMax[feat] - MODEL.sMin[feat]);
+}
+
+function sigmoid(x) { return 1 / (1 + Math.exp(-x)); }
+
+function getInputs() {
+  const race = document.getElementById('sRace').value;
+  return {
+    age: +document.getElementById('sAge').value,
+    gender_enc: +document.getElementById('sGender').value,
+    is_married: +document.getElementById('sMarried').value,
+    race_white: race==='white'?1:0,
+    race_black: race==='black'?1:0,
+    race_asian: race==='asian'?1:0,
+    race_hispanic: race==='hispanic'?1:0,
+    income: +document.getElementById('sIncome').value,
+    has_diabetes: togState.Diabetes?1:0,
+    has_hypertension: togState.Hypertension?1:0,
+    has_sleep_disorder: togState.Sleep?1:0,
+    has_stress_anxiety: togState.Stress?1:0,
+    has_obesity: togState.Obesity?1:0,
+    has_high_cholesterol: togState.Cholesterol?1:0,
+    height_cm: +document.getElementById('sHeight').value,
+    weight_kg: +document.getElementById('sWeight').value,
+    diastolic_bp: +document.getElementById('sDiastolic').value,
+    heart_rate: +document.getElementById('sHR').value,
+    hba1c: +document.getElementById('sHba1c').value,
+    spo2: +document.getElementById('sSpo2').value,
+    phq2_score: +document.getElementById('sPHQ').value,
+    resp_rate: +document.getElementById('sResp').value,
+    systolic_bp: +document.getElementById('sSystolic').value,
+    alcohol_score: +document.getElementById('sAlcohol').value,
+    bmi: +document.getElementById('sBMI').value
+  };
+}
+
+function computeProb(inp) {
+  let logit = MODEL.intercept;
+  for (const f of MODEL.features) {
+    logit += MODEL.coef[f] * scale(f, inp[f]);
+  }
+  return sigmoid(logit);
+}
+
+function featureContributions(inp) {
+  const contribs = MODEL.features.map(f => ({
+    name: f,
+    contrib: MODEL.coef[f] * scale(f, inp[f])
+  }));
+  contribs.sort((a,b) => Math.abs(b.contrib) - Math.abs(a.contrib));
+  return contribs;
+}
+
+// Toggles
+const togState = {Diabetes:false,Hypertension:false,Sleep:false,Stress:false,Obesity:false,Cholesterol:false};
+function tog(name) {
+  togState[name] = !togState[name];
+  document.getElementById('t'+name).classList.toggle('on', togState[name]);
+  predict();
+}
+function setTog(name, val) {
+  togState[name] = !!val;
+  document.getElementById('t'+name).classList.toggle('on', togState[name]);
+}
+
+// Sync sliders
+function sync(id, val, dec=0) {
+  document.getElementById('v'+id).textContent = dec ? parseFloat(val).toFixed(dec) : val;
+}
+function syncIncome(val) {
+  document.getElementById('vIncome').textContent = parseInt(val).toLocaleString();
+}
+function syncBMI() {
+  const h = +document.getElementById('sHeight').value / 100;
+  const w = +document.getElementById('sWeight').value;
+  const bmi = (w / (h*h)).toFixed(1);
+  document.getElementById('sBMI').value = bmi;
+  document.getElementById('vBMI').textContent = bmi;
+}
+
+let lastProb = null;
+const snapshots = [];
+
+function predict() {
+  const inp = getInputs();
+  const prob = computeProb(inp);
+  lastProb = prob;
+  const pct = (prob * 100).toFixed(1);
+  
+  // Update number
+  const numEl = document.getElementById('riskNum');
+  numEl.textContent = pct + '%';
+  numEl.style.color = prob < 0.3 ? 'var(--good)' : prob < 0.6 ? 'var(--warn)' : 'var(--danger)';
+  
+  // Tier
+  const tier = prob < 0.2 ? ['Low Risk','var(--good)'] : prob < 0.4 ? ['Moderate Risk','#84cc16'] : prob < 0.6 ? ['Elevated Risk','var(--warn)'] : prob < 0.8 ? ['High Risk','#f97316'] : ['Critical Risk','var(--danger)'];
+  const tierEl = document.getElementById('riskTier');
+  tierEl.textContent = tier[0];
+  tierEl.style.color = tier[1];
+  
+  // Gauge arc (220 = full semicircle dasharray)
+  const offset = 220 - (prob * 220);
+  document.getElementById('gaugeArc').style.strokeDashoffset = offset;
+  
+  // Needle (-90deg = low, +90deg = high)
+  const deg = -90 + (prob * 180);
+  document.getElementById('gaugeNeedle').style.transform = `rotate(${deg}deg)`;
+  
+  // Feature bars
+  renderFeatBars(inp);
+  renderCompare();
+}
+
+function renderFeatBars(inp) {
+  const contribs = featureContributions(inp).slice(0, 12);
+  const maxAbs = Math.max(...contribs.map(c => Math.abs(c.contrib)));
+  const labels = {age:'Age',gender_enc:'Sex',is_married:'Married',race_white:'Race: White',race_black:'Race: Black',race_asian:'Race: Asian',race_hispanic:'Race: Hispanic',income:'Income',has_diabetes:'Diabetes',has_hypertension:'Hypertension',has_sleep_disorder:'Sleep Disorder',has_stress_anxiety:'Stress/Anxiety',has_obesity:'Obesity',has_high_cholesterol:'High Chol.',height_cm:'Height',weight_kg:'Weight',diastolic_bp:'Diastolic BP',heart_rate:'Heart Rate',hba1c:'HbA1c',spo2:'SpO₂',phq2_score:'PHQ-2',resp_rate:'Resp Rate',systolic_bp:'Systolic BP',alcohol_score:'Alcohol',bmi:'BMI'};
+  
+  document.getElementById('featBars').innerHTML = contribs.map(c => {
+    const pct = (Math.abs(c.contrib) / maxAbs * 100).toFixed(1);
+    const col = c.contrib > 0 ? '#ef4444' : '#10b981';
+    const sign = c.contrib > 0 ? '+' : '';
+    return `<div class="feat-bar-row">
+      <div class="fn">${labels[c.name]||c.name}</div>
+      <div class="feat-bar-bg"><div class="feat-bar-fill" style="width:${pct}%;background:${col}"></div></div>
+      <div class="fv" style="color:${col}">${sign}${c.contrib.toFixed(3)}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderCompare() {
+  if (snapshots.length < 2) return;
+  const panel = document.getElementById('comparePanel');
+  const a = snapshots[snapshots.length-2];
+  const b = snapshots[snapshots.length-1];
+  const fields = ['age','systolic_bp','diastolic_bp','heart_rate','spo2','resp_rate','bmi','hba1c','alcohol_score'];
+  const labels = {age:'Age',systolic_bp:'Sys BP',diastolic_bp:'Dia BP',heart_rate:'Heart Rate',spo2:'SpO₂',resp_rate:'Resp Rate',bmi:'BMI',hba1c:'HbA1c',alcohol_score:'Alcohol'};
+  
+  panel.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:10px">
+    <div style="font-size:10px;font-family:var(--mono);padding:4px 8px;background:rgba(59,130,246,.1);border-radius:4px;color:var(--accent)">${a.label}: <strong>${(a.prob*100).toFixed(1)}%</strong></div>
+    <div style="font-size:10px;font-family:var(--mono);padding:4px 8px;background:rgba(99,102,241,.1);border-radius:4px;color:#818cf8">${b.label}: <strong>${(b.prob*100).toFixed(1)}%</strong></div>
+  </div>` +
+  fields.map(f => {
+    const av = a.inp[f]??'—', bv = b.inp[f]??'—';
+    const diff = typeof av==='number' && typeof bv==='number' ? (bv-av) : 0;
+    let cls='delta-eq', dstr='=';
+    if (Math.abs(diff)>0.01) { cls=diff>0?'delta-up':'delta-dn'; dstr=(diff>0?'+':'')+diff.toFixed(1); }
+    return `<div class="compare-row">
+      <span class="cn">${labels[f]||f}</span>
+      <span class="cb2">${typeof av==='number'?av.toFixed(1):av}</span>
+      <span class="arrow-delta ${cls}">${dstr}</span>
+      <span class="cb2">${typeof bv==='number'?bv.toFixed(1):bv}</span>
+    </div>`;
+  }).join('');
+}
+
+// Snapshots
+function saveSnap() {
+  const inp = getInputs();
+  const prob = computeProb(inp);
+  const n = snapshots.length + 1;
+  snapshots.push({ label: `Snap ${n}`, prob, inp });
+  renderSnapList();
+  renderCompare();
+}
+
+function renderSnapList() {
+  const list = document.getElementById('snapList');
+  if (!snapshots.length) { list.innerHTML='<div style="font-size:11px;color:var(--muted);font-family:var(--mono);padding:8px 0">Save scenarios to compare side-by-side</div>'; return; }
+  const cols = ['var(--accent)','#818cf8','var(--warn)','var(--good)','#f97316','#ec4899'];
+  list.innerHTML = snapshots.map((s,i) => `
+    <div class="snap-item" onclick="loadSnap(${i})">
+      <div class="snap-dot" style="background:${cols[i%cols.length]}"></div>
+      <span class="snap-label" style="color:${cols[i%cols.length]}">${s.label}</span>
+      <span class="snap-prob" style="color:${s.prob<.4?'var(--good)':s.prob<.6?'var(--warn)':'var(--danger)'}">${(s.prob*100).toFixed(1)}%</span>
+      <span class="snap-del" onclick="event.stopPropagation();delSnap(${i})">✕</span>
+    </div>`).join('');
+}
+
+function loadSnap(i) {
+  const s = snapshots[i];
+  loadInputs(s.inp);
+}
+
+function delSnap(i) {
+  snapshots.splice(i,1);
+  snapshots.forEach((s,j) => s.label = `Snap ${j+1}`);
+  renderSnapList();
+  renderCompare();
+}
+
+function clearSnaps() {
+  snapshots.length = 0;
+  renderSnapList();
+  document.getElementById('comparePanel').innerHTML = '<div style="font-size:11px;color:var(--muted);font-family:var(--mono)">Save 2+ snapshots to see a side-by-side delta comparison.</div>';
+}
+
+function loadInputs(inp) {
+  document.getElementById('sAge').value = inp.age; sync('Age', inp.age);
+  document.getElementById('sGender').value = inp.gender_enc;
+  document.getElementById('sMarried').value = inp.is_married;
+  const r = inp.race_white?'white':inp.race_black?'black':inp.race_asian?'asian':inp.race_hispanic?'hispanic':'other';
+  document.getElementById('sRace').value = r;
+  document.getElementById('sIncome').value = inp.income; syncIncome(inp.income);
+  setTog('Diabetes', inp.has_diabetes); setTog('Hypertension', inp.has_hypertension);
+  setTog('Sleep', inp.has_sleep_disorder); setTog('Stress', inp.has_stress_anxiety);
+  setTog('Obesity', inp.has_obesity); setTog('Cholesterol', inp.has_high_cholesterol);
+  document.getElementById('sHeight').value = inp.height_cm; sync('Height', inp.height_cm);
+  document.getElementById('sWeight').value = inp.weight_kg; sync('Weight', inp.weight_kg);
+  document.getElementById('sBMI').value = inp.bmi; sync('BMI', inp.bmi, 1);
+  document.getElementById('sSystolic').value = inp.systolic_bp; sync('Systolic', inp.systolic_bp);
+  document.getElementById('sDiastolic').value = inp.diastolic_bp; sync('Diastolic', inp.diastolic_bp);
+  document.getElementById('sHR').value = inp.heart_rate; sync('HR', inp.heart_rate);
+  document.getElementById('sSpo2').value = inp.spo2; sync('Spo2', inp.spo2, 1);
+  document.getElementById('sResp').value = inp.resp_rate; sync('Resp', inp.resp_rate);
+  document.getElementById('sHba1c').value = inp.hba1c; sync('Hba1c', inp.hba1c, 1);
+  document.getElementById('sPHQ').value = inp.phq2_score; sync('PHQ', inp.phq2_score);
+  document.getElementById('sAlcohol').value = inp.alcohol_score; sync('Alcohol', inp.alcohol_score, 1);
+  predict();
+}
+
+function resetDefaults() {
+  loadInputs({age:58,gender_enc:1,is_married:0,race_white:1,race_black:0,race_asian:0,race_hispanic:0,income:50000,has_diabetes:0,has_hypertension:0,has_sleep_disorder:0,has_stress_anxiety:0,has_obesity:0,has_high_cholesterol:0,height_cm:166,weight_kg:78,diastolic_bp:83,heart_rate:78,hba1c:5.6,spo2:96.3,phq2_score:2,resp_rate:19,systolic_bp:130,alcohol_score:3.5,bmi:28.3});
+}
+
+// Quick scenarios
+const SCENARIOS = {
+  young_healthy: {age:32,gender_enc:0,is_married:1,race_white:1,race_black:0,race_asian:0,race_hispanic:0,income:75000,has_diabetes:0,has_hypertension:0,has_sleep_disorder:0,has_stress_anxiety:0,has_obesity:0,has_high_cholesterol:0,height_cm:165,weight_kg:62,diastolic_bp:70,heart_rate:65,hba1c:5.1,spo2:99,phq2_score:0,resp_rate:14,systolic_bp:112,alcohol_score:1.0,bmi:22.8},
+  middle_hyp: {age:52,gender_enc:1,is_married:1,race_white:1,race_black:0,race_asian:0,race_hispanic:0,income:55000,has_diabetes:0,has_hypertension:1,has_sleep_disorder:0,has_stress_anxiety:0,has_obesity:0,has_high_cholesterol:1,height_cm:175,weight_kg:85,diastolic_bp:95,heart_rate:80,hba1c:5.8,spo2:96,phq2_score:1,resp_rate:17,systolic_bp:155,alcohol_score:3.5,bmi:27.8},
+  elderly_multi: {age:74,gender_enc:1,is_married:0,race_white:1,race_black:0,race_asian:0,race_hispanic:0,income:22000,has_diabetes:1,has_hypertension:1,has_sleep_disorder:1,has_stress_anxiety:1,has_obesity:1,has_high_cholesterol:1,height_cm:170,weight_kg:98,diastolic_bp:98,heart_rate:92,hba1c:7.8,spo2:93,phq2_score:5,resp_rate:23,systolic_bp:168,alcohol_score:5.5,bmi:33.9},
+  diabetic_obese: {age:58,gender_enc:0,is_married:1,race_white:0,race_black:1,race_asian:0,race_hispanic:0,income:35000,has_diabetes:1,has_hypertension:1,has_sleep_disorder:0,has_stress_anxiety:0,has_obesity:1,has_high_cholesterol:1,height_cm:163,weight_kg:102,diastolic_bp:92,heart_rate:84,hba1c:7.9,spo2:95.5,phq2_score:2,resp_rate:20,systolic_bp:148,alcohol_score:2.0,bmi:38.4},
+  smoker_stress: {age:45,gender_enc:1,is_married:0,race_white:0,race_black:0,race_asian:0,race_hispanic:1,income:28000,has_diabetes:0,has_hypertension:0,has_sleep_disorder:1,has_stress_anxiety:1,has_obesity:0,has_high_cholesterol:0,height_cm:172,weight_kg:79,diastolic_bp:82,heart_rate:88,hba1c:5.5,spo2:96.5,phq2_score:5,resp_rate:19,systolic_bp:130,alcohol_score:6.5,bmi:26.7},
+  optimal_treatment: {age:62,gender_enc:1,is_married:1,race_white:1,race_black:0,race_asian:0,race_hispanic:0,income:90000,has_diabetes:0,has_hypertension:0,has_sleep_disorder:0,has_stress_anxiety:0,has_obesity:0,has_high_cholesterol:0,height_cm:178,weight_kg:76,diastolic_bp:74,heart_rate:66,hba1c:5.3,spo2:99,phq2_score:0,resp_rate:14,systolic_bp:118,alcohol_score:0.5,bmi:24.0}
+};
+const SCENNAMES = {young_healthy:'🟢 Young & Healthy — low risk profile (32F)',middle_hyp:'🟡 Mid-age hypertensive male (52M)',elderly_multi:'🔴 Elderly multi-comorbid — high risk (74M)',diabetic_obese:'🟠 Diabetic + obese female (58F)',smoker_stress:'🟠 High stress, alcohol use (45M)',optimal_treatment:'💊 Post-treatment optimised profile (62M)'};
+
+function loadScenario(key) {
+  loadInputs(SCENARIOS[key]);
+  document.querySelectorAll('.scen-btn').forEach(b => b.classList.remove('active'));
+  event.target.closest('.scen-btn').classList.add('active');
+  document.getElementById('scenHint').textContent = SCENNAMES[key] || key;
+}
+
+// Interventions
+function intervene(type) {
+  const inp = getInputs();
+  const before = (computeProb(inp)*100).toFixed(1);
+  if (type==='bp')   { inp.systolic_bp=120; inp.diastolic_bp=78; setTog('Hypertension',false); inp.has_hypertension=0; }
+  if (type==='weight') { inp.weight_kg=Math.max(44,inp.weight_kg-10); inp.bmi=+(inp.weight_kg/((inp.height_cm/100)**2)).toFixed(1); }
+  if (type==='alcohol') { inp.alcohol_score=0; }
+  if (type==='spo2') { inp.spo2=98.5; inp.resp_rate=Math.min(inp.resp_rate,16); }
+  if (type==='stress') { inp.phq2_score=0; setTog('Stress',false); inp.has_stress_anxiety=0; }
+  if (type==='diabetes') { inp.hba1c=5.5; }
+  if (type==='chol') { setTog('Cholesterol',false); inp.has_high_cholesterol=0; }
+  if (type==='all') {
+    inp.systolic_bp=118; inp.diastolic_bp=74; inp.alcohol_score=0;
+    inp.spo2=98.5; inp.resp_rate=14; inp.phq2_score=0;
+    inp.hba1c=5.4; inp.weight_kg=Math.max(44,inp.weight_kg-10);
+    inp.bmi=+(inp.weight_kg/((inp.height_cm/100)**2)).toFixed(1);
+    setTog('Hypertension',false); setTog('Stress',false); setTog('Cholesterol',false);
+    inp.has_hypertension=0; inp.has_stress_anxiety=0; inp.has_high_cholesterol=0;
+  }
+  loadInputs(inp);
+  const after = (computeProb(getInputs())*100).toFixed(1);
+  const delta = (after - before).toFixed(1);
+  const sign = delta > 0 ? '+' : '';
+  const col = delta < 0 ? '#10b981' : '#ef4444';
+  document.getElementById('intervenHint').innerHTML = `Intervention applied — risk changed from <strong>${before}%</strong> → <strong style="color:${col}">${after}%</strong> (<span style="color:${col}">${sign}${delta}%</span>)`;
+}
+
+// Init
+predict();
+</script>
+</body>
+</html>
