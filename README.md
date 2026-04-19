@@ -1,4 +1,4 @@
-# Aarogya Twin | Null Pointers 🫀🤖
+# Aarogya Twin | Null Pointers
 
 🚀 **Live Demo:** : [Aarogya.Twin](https://aarogya-twin.vercel.app/?test)
 
