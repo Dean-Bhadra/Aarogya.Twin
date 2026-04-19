@@ -6,7 +6,6 @@ shap
 pandas<2.2.0
 pydantic
 numpy<2.0.0
-tensorflow<2.16.0
-keras<3.0.0
-tf-keras
+tensorflow
+keras
 lightgbm
